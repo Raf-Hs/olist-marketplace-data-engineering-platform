@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from src.config.paths import silver_dir, gold_dir
+from src.config.paths import gold_dir, silver_dir
 from src.utils.logging import get_logger
 
 logger = get_logger(__name__)

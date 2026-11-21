@@ -80,8 +80,9 @@ def check_referential_integrity(
 
 def run_basic_checks() -> list[CheckResult]:
     """Run a standard suite of data quality checks on silver data."""
-    from src.config.paths import silver_dir
     import pandas as pd
+
+    from src.config.paths import silver_dir
 
     results: list[CheckResult] = []
 

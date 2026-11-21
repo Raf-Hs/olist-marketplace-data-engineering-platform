@@ -5,7 +5,7 @@ from __future__ import annotations
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
 
-from src.config.paths import silver_dir, gold_dir
+from src.config.paths import gold_dir, silver_dir
 from src.spark.session import get_spark
 from src.utils.logging import get_logger
 

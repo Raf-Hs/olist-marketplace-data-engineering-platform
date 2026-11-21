@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
-from src.config.paths import raw_dir, bronze_dir
-from src.ingestion.schemas import OLIST_SCHEMAS, validate_schema, TableSchema
+from src.config.paths import bronze_dir, raw_dir
+from src.ingestion.schemas import OLIST_SCHEMAS, TableSchema, validate_schema
 from src.utils.logging import get_logger
 
 logger = get_logger(__name__)
@@ -39,7 +39,7 @@ def load_source(schema: TableSchema) -> pd.DataFrame:
 
 def ingest_table(schema: TableSchema, run_id: str | None = None) -> dict[str, Any]:
     """Ingest one table into the Bronze layer with metadata."""
-    run_id = run_id or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    run_id = run_id or datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     df = load_source(schema)
     out_dir = bronze_dir() / schema.name
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -51,10 +51,10 @@ def ingest_table(schema: TableSchema, run_id: str | None = None) -> dict[str, An
     metadata = {
         "table": schema.name,
         "source_file": schema.file_name,
-        "row_count": int(len(df)),
+        "row_count": len(df),
         "column_count": int(df.shape[1]),
         "source_hash_sha256": _file_hash(raw_dir() / schema.file_name),
-        "ingested_at_utc": datetime.now(timezone.utc).isoformat(),
+        "ingested_at_utc": datetime.now(UTC).isoformat(),
         "run_id": run_id,
     }
     meta_path = out_dir / "metadata.json"
@@ -65,12 +65,12 @@ def ingest_table(schema: TableSchema, run_id: str | None = None) -> dict[str, An
 
 
 def ingest_all(run_id: str | None = None) -> list[dict[str, Any]]:
-    run_id = run_id or datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    run_id = run_id or datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     results = []
     for name, schema in OLIST_SCHEMAS.items():
         try:
             results.append(ingest_table(schema, run_id=run_id))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             logger.error("Failed to ingest %s: %s", name, exc)
             raise
     return results
