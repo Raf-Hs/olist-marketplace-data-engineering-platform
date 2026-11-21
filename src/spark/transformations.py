@@ -26,10 +26,16 @@ def build_sales_enriched(spark: SparkSession) -> DataFrame:
     products = products.join(trans, on="product_category_name", how="left")
 
     df = (
-        items.join(orders.select("order_id", "customer_id", "order_purchase_timestamp", "order_status"),
-                   on="order_id", how="inner")
-        .join(products.select("product_id", "product_category_name", "product_category_name_english"),
-               on="product_id", how="left")
+        items.join(
+            orders.select("order_id", "customer_id", "order_purchase_timestamp", "order_status"),
+            on="order_id",
+            how="inner",
+        )
+        .join(
+            products.select("product_id", "product_category_name", "product_category_name_english"),
+            on="product_id",
+            how="left",
+        )
         .join(sellers.select("seller_id", "seller_state"), on="seller_id", how="left")
     )
     df = df.withColumn("order_purchase_timestamp", F.to_timestamp("order_purchase_timestamp"))
@@ -54,8 +60,10 @@ def revenue_by_category(df: DataFrame) -> DataFrame:
 def revenue_by_month(df: DataFrame) -> DataFrame:
     return (
         df.groupBy("purchase_year", "purchase_month")
-        .agg(F.round(F.sum("total_item_value"), 2).alias("revenue"),
-             F.countDistinct("order_id").alias("orders"))
+        .agg(
+            F.round(F.sum("total_item_value"), 2).alias("revenue"),
+            F.countDistinct("order_id").alias("orders"),
+        )
         .orderBy("purchase_year", "purchase_month")
     )
 
@@ -63,8 +71,10 @@ def revenue_by_month(df: DataFrame) -> DataFrame:
 def top_sellers(df: DataFrame, n: int = 20) -> DataFrame:
     return (
         df.groupBy("seller_id", "seller_state")
-        .agg(F.round(F.sum("total_item_value"), 2).alias("revenue"),
-             F.countDistinct("order_id").alias("orders"))
+        .agg(
+            F.round(F.sum("total_item_value"), 2).alias("revenue"),
+            F.countDistinct("order_id").alias("orders"),
+        )
         .orderBy(F.desc("revenue"))
         .limit(n)
     )
@@ -75,13 +85,18 @@ def delivery_vs_review(spark: SparkSession) -> DataFrame:
     reviews = spark.read.parquet(_silver_path("order_reviews"))
     df = orders.join(reviews.select("order_id", "review_score"), on="order_id", how="inner")
     df = df.withColumn("order_purchase_timestamp", F.to_timestamp("order_purchase_timestamp"))
-    df = df.withColumn("order_delivered_customer_date", F.to_timestamp("order_delivered_customer_date"))
-    df = df.withColumn("delivery_days",
-                       F.datediff("order_delivered_customer_date", "order_purchase_timestamp"))
+    df = df.withColumn(
+        "order_delivered_customer_date", F.to_timestamp("order_delivered_customer_date")
+    )
+    df = df.withColumn(
+        "delivery_days", F.datediff("order_delivered_customer_date", "order_purchase_timestamp")
+    )
     return (
         df.groupBy("review_score")
-        .agg(F.round(F.avg("delivery_days"), 2).alias("avg_delivery_days"),
-             F.count("*").alias("orders"))
+        .agg(
+            F.round(F.avg("delivery_days"), 2).alias("avg_delivery_days"),
+            F.count("*").alias("orders"),
+        )
         .orderBy("review_score")
     )
 

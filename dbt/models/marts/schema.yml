@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: mart_revenue_by_month
+    columns:
+      - name: year
+        tests: [not_null]
+      - name: month
+        tests: [not_null]
+      - name: revenue
+        tests: [not_null]

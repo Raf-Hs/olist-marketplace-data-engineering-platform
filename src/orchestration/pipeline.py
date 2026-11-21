@@ -11,14 +11,17 @@ def run_pipeline() -> None:
     logger.info("=== Pipeline start ===")
 
     from src.ingestion.ingest import ingest_all
+
     ingest_all()
     logger.info("Ingestion complete.")
 
     from src.transformations.silver import transform_all
+
     transform_all()
     logger.info("Silver complete.")
 
     from src.quality.checks import run_basic_checks
+
     results = run_basic_checks()
     failed = [r for r in results if not r.passed]
     if failed:
@@ -26,6 +29,7 @@ def run_pipeline() -> None:
     logger.info("Data quality checks passed.")
 
     from src.transformations.gold import build_gold
+
     build_gold()
     logger.info("Gold complete.")
 

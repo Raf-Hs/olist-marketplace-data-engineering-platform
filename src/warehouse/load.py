@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from pathlib import Path
 
 import pandas as pd
 from sqlalchemy import text
@@ -20,7 +21,10 @@ def _silver(name: str) -> pd.DataFrame:
 
 def create_schema() -> None:
     engine = get_engine()
-    with open("infra/postgres/init/01_schema.sql", "r", encoding="utf-8") as f:
+    schema_path = (
+        Path(__file__).resolve().parents[2] / "infra" / "postgres" / "init" / "01_schema.sql"
+    )
+    with schema_path.open("r", encoding="utf-8") as f:
         ddl = f.read()
     with engine.begin() as conn:
         conn.execute(text(ddl))
@@ -184,18 +188,12 @@ def load_fact_orders() -> None:
     cust_map = pd.read_sql("SELECT customer_key, customer_id FROM dw.dim_customer", engine)
 
     # payment aggregates per order
-    pay_agg = (
-        payments.groupby("order_id", as_index=False)
-        .agg(
-            total_payment_value=("payment_value", "sum"),
-            payment_type=("payment_type", lambda s: s.mode().iloc[0] if not s.mode().empty else None),
-        )
+    pay_agg = payments.groupby("order_id", as_index=False).agg(
+        total_payment_value=("payment_value", "sum"),
+        payment_type=("payment_type", lambda s: s.mode().iloc[0] if not s.mode().empty else None),
     )
     # review: take max score per order (or first)
-    rev_agg = (
-        reviews.groupby("order_id", as_index=False)
-        .agg(review_score=("review_score", "max"))
-    )
+    rev_agg = reviews.groupby("order_id", as_index=False).agg(review_score=("review_score", "max"))
 
     df = orders.merge(cust_map, on="customer_id", how="left", validate="many_to_one")
     df = df.merge(pay_agg, on="order_id", how="left", validate="one_to_one")

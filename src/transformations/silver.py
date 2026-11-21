@@ -94,7 +94,9 @@ def transform_order_items() -> pd.DataFrame:
     df = _read_bronze("order_items").copy()
     df = _strip_strings(df)
     if "shipping_limit_date" in df.columns:
-        df["shipping_limit_date"] = pd.to_datetime(df["shipping_limit_date"], errors="coerce", utc=True)
+        df["shipping_limit_date"] = pd.to_datetime(
+            df["shipping_limit_date"], errors="coerce", utc=True
+        )
     # ensure numeric
     for col in ["price", "freight_value"]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
@@ -107,8 +109,12 @@ def transform_order_payments() -> pd.DataFrame:
     df = _strip_strings(df)
     for col in ["payment_value"]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
-    df["payment_sequential"] = pd.to_numeric(df["payment_sequential"], errors="coerce").astype("Int64")
-    df["payment_installments"] = pd.to_numeric(df["payment_installments"], errors="coerce").astype("Int64")
+    df["payment_sequential"] = pd.to_numeric(df["payment_sequential"], errors="coerce").astype(
+        "Int64"
+    )
+    df["payment_installments"] = pd.to_numeric(df["payment_installments"], errors="coerce").astype(
+        "Int64"
+    )
     return df
 
 
@@ -133,14 +139,11 @@ def transform_geolocation() -> pd.DataFrame:
     df = df.drop_duplicates()
     logger.info("geolocation dedup: %d -> %d", before, len(df))
     # aggregate to one row per zip prefix (median lat/lng) for warehouse use
-    agg = (
-        df.groupby("geolocation_zip_code_prefix", as_index=False, sort=False)
-        .agg(
-            geolocation_lat=("geolocation_lat", "median"),
-            geolocation_lng=("geolocation_lng", "median"),
-            geolocation_city=("geolocation_city", "first"),
-            geolocation_state=("geolocation_state", "first"),
-        )
+    agg = df.groupby("geolocation_zip_code_prefix", as_index=False, sort=False).agg(
+        geolocation_lat=("geolocation_lat", "median"),
+        geolocation_lng=("geolocation_lng", "median"),
+        geolocation_city=("geolocation_city", "first"),
+        geolocation_state=("geolocation_state", "first"),
     )
     return agg
 
