@@ -1,0 +1,63 @@
+# Python
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (raw and generated layers are not versioned)
+data/raw/
+data/bronze/
+data/silver/
+data/gold/
+data/processed/
+*.csv
+*.parquet
+*.delta
+
+# Keep samples
+!data/samples/
+
+# Logs
+logs/
+*.log
+
+# Java / Spark temp
+hsperfdata_*
+metastore_db/
+derby.log
+spark-warehouse/
+
+# dbt
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+
+# Airflow
+airflow/logs/
+
+# Docker
+postgres_data/

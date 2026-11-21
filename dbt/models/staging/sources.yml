@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: dw
+    schema: dw
+    tables:
+      - name: fact_order_items
+      - name: fact_orders
+      - name: dim_customer
+      - name: dim_product
+      - name: dim_seller
+      - name: dim_date

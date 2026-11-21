@@ -1,0 +1,29 @@
+# Core
+python-dotenv>=1.2
+pydantic>=2.14
+pydantic-settings>=2.16
+structlog>=26.1
+
+# Data
+pandas>=3.1
+numpy>=2.4
+pyarrow>=26.0
+
+# Database
+sqlalchemy>=2.1
+psycopg2-binary>=2.9
+
+# Distributed processing
+pyspark>=3.5
+
+# Transformation
+dbt-core>=1.11
+dbt-postgres>=1.11
+
+# Local analytics
+duckdb>=2.0
+
+# Testing / quality
+pytest>=9.2
+pytest-cov>=7.1
+ruff>=0.17

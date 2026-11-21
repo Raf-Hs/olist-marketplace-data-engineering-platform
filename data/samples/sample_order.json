@@ -1,0 +1,19 @@
+
+{
+    "order_id": "abc123",
+    "customer_id": "customer01",
+    "order_status": "delivered",
+    "price": 150.75,
+    "approved": true,
+    "delivery": null,
+    "items": [
+        {
+            "product_id": "product01",
+            "quantity": 2
+        },
+        {
+            "product_id": "product02",
+            "quantity": 1
+        }
+    ]
+}

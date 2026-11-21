@@ -1,0 +1,12 @@
+olist_marketplace:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      user: olist_user
+      password: OlistDev_2026_Local
+      port: 5434
+      dbname: olist_dw
+      schema: public
+      threads: 4
