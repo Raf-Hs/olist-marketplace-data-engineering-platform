@@ -1,12 +1,15 @@
 # Execution
 
-## Full pipeline
+## Full pipeline (Bronze -> Silver -> Quality -> Gold)
 
 ```bash
 python -m src.orchestration.pipeline
 ```
 
-Steps: ingestion -> silver -> quality checks -> gold.
+Steps: ingestion -> silver -> quality checks (gate) -> gold.
+
+Note: the warehouse load is **not** part of this pipeline. Run it separately
+(see below) before dbt.
 
 ## Individual steps
 
@@ -18,11 +21,24 @@ python -c "import sys; sys.path.insert(0,'.'); from src.transformations.gold imp
 python -c "import sys; sys.path.insert(0,'.'); from src.warehouse.load import load_warehouse; load_warehouse()"
 ```
 
-## Spark
+## Warehouse
+
+Requires PostgreSQL running (`docker compose up -d`):
 
 ```bash
-JAVA_HOME=/home/rafa/.local/jdk/jdk-17.0.13+11 python run_spark.py
+python -c "import sys; sys.path.insert(0,'.'); from src.warehouse.load import load_warehouse; load_warehouse()"
 ```
+
+## Spark
+
+No committed entry point exists (`run_spark.py` is missing). To run the analytics,
+call the module functions manually, e.g.:
+
+```bash
+python -c "import sys; sys.path.insert(0,'.'); from src.spark.transformations import run_spark_analytics; print(run_spark_analytics())"
+```
+
+Requires Java 17 and `JAVA_HOME` (see `.env.example`).
 
 ## dbt
 

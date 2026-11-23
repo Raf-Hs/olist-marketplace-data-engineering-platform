@@ -24,5 +24,5 @@
 
 ## Automated checks
 
-`src/quality/checks.py` implements the checks; `tests/data_quality/test_quality.py`
-asserts they pass.
+`src/quality/checks.py` implements 13 checks in `run_basic_checks()`;
+`tests/data_quality/test_quality.py` asserts they pass. See [testing.md](testing.md).

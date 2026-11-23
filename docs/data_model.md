@@ -26,3 +26,8 @@ for traceability. Fact tables reference surrogate keys.
 
 Not implemented (Type 1 overwrite). Justified: dimension attributes in this dataset
 are static for the observed period.
+
+## Related
+
+- Column definitions: [data_dictionary.md](data_dictionary.md).
+- Schema DDL: `infra/postgres/init/01_schema.sql`.
